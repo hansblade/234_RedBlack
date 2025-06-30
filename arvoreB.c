@@ -4,7 +4,7 @@
 
 struct no{
     int *vetChaves;
-    noB *vetFilhos;
+    noB **vetFilhos;
     noB *noPai;
     int ocupacao;
     int folha;
@@ -52,64 +52,65 @@ noB *alocaNo(int m){
 void insereChave(int valor, arvoreB *arv){
     //DECLARAÇÃO DE VARIÁVEIS
     noB *aux = arv->raiz;
-    int i = 0;
+    noB *pai = NULL;
+    int i = 0, pos = 0;;
 
     //Encontrar a folha correta
     //completar com o loop
     while(aux->folha == 0){
-        while(valor > aux->vetChaves[i]){
+        i = 0;
+        while(i < aux->ocupacao && valor > aux->vetChaves[i]){
             i++;
         }
-        if(valor > aux->vetChaves[i])
-           i++;
-        aux = &aux->vetFilhos[i];
+        pai = aux;
+        pos = i;
+        aux = aux->vetFilhos[i];
 
-        i = 0;
     }
 
     //Inserir na folha
     if(aux->ocupacao < arv->ordem - 1){
         //Inserir
-        i = aux->ocupacao;
-        while(valor < aux->vetChaves[i]){
+        i = aux->ocupacao - 1;
+        while(i >= 0 && valor < aux->vetChaves[i]){
             aux->vetChaves[i] = aux->vetChaves[i-1];
+            i--;
         }
         aux->vetChaves[i] = valor;
+        aux->ocupacao++;
     }else{
         //Split
-        //Completar com o algoritmo do cormen
+        split(pai, pos, arv);
+        insereChave(valor, arv);
     }
 }
 
-noB *split(noB *noCheio, arvoreB *arv){
+void *split(noB *pai, int posicaoFilho, arvoreB *arv){
     int m = arv->ordem;
     int t = m/2;
-    noB *pai = noCheio->noPai;
+    noB *noCheio = pai->vetFilhos[posicaoFilho];
 
     noB *novoNo = alocaNo(m);
     novoNo->folha = noCheio->folha;
     novoNo->ocupacao = t-1;
 
-    for(int i = 0; i < t-1; i++){
+    for(int i = 1; i <= t-1; i++){
         novoNo->vetChaves[i] = noCheio->vetChaves[i+t];
     }
 
     if(noCheio->folha = 0){
-        for(int i = 0; i < t; i++){
+        for(int i = 1; i <= t; i++){
             novoNo->vetFilhos[i] = noCheio->vetFilhos[i + t];
         }
     }
 
     noCheio->ocupacao = t-1;
 
+    for(int i = pai->ocupacao+1; i >= posicaoFilho+1; i--){
+        pai->vetFilhos[i+1] = pai->vetChaves[i];
+    }
 
+    pai->vetChaves[posicaoFilho] = noCheio->vetChaves[t];
 
+    pai->ocupacao = pai->ocupacao+1;
 }
-
-// 2t - 1 = 4
-// 2t = 5
-// t = 2,5
-
-// 2t - 1 = 3
-// 2t = 4
-// t = 2

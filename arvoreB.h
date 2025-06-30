@@ -16,7 +16,7 @@ void insereChave(int valor, arvoreB *arv);
 
 //Faz o split de um nó cheio
 //Retorna o nó pai
-noB *split(noB *noCheio, arvoreB *arv);
+void *split(noB *pai, int posicaoFilho, arvoreB *arv);
 
 //Remove uma chave da árvore
 void removeChave(int valor, arvoreB *arv);
