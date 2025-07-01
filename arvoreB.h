@@ -22,14 +22,15 @@ noB *alocaNo();
 
 void percorreArvore(noB *no);
 
+void percorreArvorePreOrdem(noB *no);
+
 //Insere uma nova chave na árvore
 void insereChave(int chave, arvoreB *arv);
 
 void insereNaoCheio(noB *no, int chave);
 
 //Faz o split de um nó cheio
-//Retorna o nó pai
-void *split(noB *pai, int posicaoFilho);
+void split(noB *pai, int posicaoFilho);
 
 //Remove uma chave da árvore
 void removeChave(int valor, arvoreB *arv);

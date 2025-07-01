@@ -95,6 +95,20 @@ void percorreArvore(noB *no){
     }
 }
 
+void percorreArvorePreOrdem(noB *no){
+    if(no != NULL){
+        printf("[");
+        for (int i = 0; i < no->ocupacao; i++){
+            printf("%d ", no->vetChaves[i]);
+        }
+        printf("] ");
+        for(int i = 0; i <= no->ocupacao; i++){
+            percorreArvorePreOrdem(no->vetFilhos[i]);
+        }
+    }
+}
+
+
 void insereChave(int chave, arvoreB *arv){
     noB *aux = arv->raiz;
 
@@ -150,7 +164,7 @@ void insereNaoCheio(noB *no, int chave){
     }
 }
 
-void *split(noB *pai, int posicaoFilho){
+void split(noB *pai, int posicaoFilho){
     int t = M/2;
     noB *noCheio = pai->vetFilhos[posicaoFilho];
 
@@ -165,6 +179,7 @@ void *split(noB *pai, int posicaoFilho){
     if(noCheio->folha == 0){
         for(int i = 0; i < t; i++){
             novoNo->vetFilhos[i] = noCheio->vetFilhos[i + t];
+            if(novoNo->vetFilhos[i]) novoNo->vetFilhos[i]->noPai = novoNo;
         }
     }
 

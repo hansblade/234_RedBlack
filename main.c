@@ -15,5 +15,7 @@ int main(){
         printf("\n");
     }
 
+    percorreArvorePreOrdem(arvore234->raiz);
+
     return 0;
 }
