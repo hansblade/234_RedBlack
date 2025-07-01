@@ -1,21 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "arvoreB.h"
+#include "arvore234_redblack.h"
 
 int main(){
-    arvoreB *arvore234 = alocaArvore();
+    arvoreB *arvore234 = alocaArvoreB();
     noB *raiz;
 
     int valores[12] = {12, 50, 45, 32, 60, 22, 34, 11, 10, 40, 15, 38};
 
     for(int i = 0; i < 12; i++){
-        insereChave(valores[i], arvore234);
+        insereChaveB(valores[i], arvore234);
         printf("arvore em ordem: ");
-        percorreArvore(arvore234->raiz);
+        percorreArvoreB(arvore234->raiz);
         printf("\n");
     }
 
-    percorreArvorePreOrdem(arvore234->raiz);
+    percorreArvoreBPreOrdem(arvore234->raiz);
+    printf("\n");
+
+    arvoreRB *arvoreRB;
+
+    arvoreRB = converter234ParaRB(arvore234);
+
+    percorreArvoreRBPreOrdem(arvoreRB, arvoreRB->sentinela->fDir);
 
     return 0;
 }

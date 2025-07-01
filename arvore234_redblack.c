@@ -1,4 +1,4 @@
-#include "arvoreB.h"
+#include "arvore234_redblack.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -12,13 +12,15 @@ struct no{
     int folha;
 };
 
-arvoreB *alocaArvore(){
+
+
+arvoreB *alocaArvoreB(){
     arvoreB *novaArvore = (arvoreB*) malloc(sizeof(arvoreB));
     if(!novaArvore){
         return NULL;
     }
 
-    noB *noRaiz = alocaNo();
+    noB *noRaiz = alocaNoB();
 
     noRaiz->folha = 1;
 
@@ -28,7 +30,7 @@ arvoreB *alocaArvore(){
     return novaArvore;
 }
 
-noB *alocaNo(){
+noB *alocaNoB(){
     noB *novoNo = (noB*) malloc(sizeof(noB));
     if(!novoNo){
         return NULL;
@@ -47,55 +49,18 @@ noB *alocaNo(){
     return novoNo;
 }
 
-// void insereChave(int valor, arvoreB *arv){
-//     //DECLARAÇÃO DE VARIÁVEIS
-//     noB *aux = arv->raiz;
-//     noB *pai = NULL;
-//     int i = 0, pos = 0;;
-
-//     //Encontrar a folha correta
-//     //completar com o loop
-//     while(aux->folha == 0){
-//         i = 0;
-//         while(i < aux->ocupacao && valor > aux->vetChaves[i]){
-//             i++;
-//         }
-//         pai = aux;
-//         pos = i;
-//         aux = &aux->vetFilhos[i];
-
-//     }
-
-//     //Inserir na folha
-//     if(aux->ocupacao < arv->ordem - 1){
-//         //Inserir
-//         i = aux->ocupacao - 1;
-//         while(i >= 0 && valor < aux->vetChaves[i]){
-//             aux->vetChaves[i] = aux->vetChaves[i-1];
-//             i--;
-//         }
-//         aux->vetChaves[i] = valor;
-//         aux->ocupacao++;
-//         printf("ok");
-//     }else{
-//         //Split
-//         split(pai, pos, arv);
-//         insereChave(valor, arv);
-//     }
-// }
-
-void percorreArvore(noB *no){
+void percorreArvoreB(noB *no){
     if(no != NULL){
         int i;
         for (i = 0; i < no->ocupacao; i++){
-            percorreArvore(no->vetFilhos[i]);
+            percorreArvoreB(no->vetFilhos[i]);
             printf("%d ", no->vetChaves[i]);
         }
-        percorreArvore(no->vetFilhos[i]);
+        percorreArvoreB(no->vetFilhos[i]);
     }
 }
 
-void percorreArvorePreOrdem(noB *no){
+void percorreArvoreBPreOrdem(noB *no){
     if(no != NULL){
         printf("[");
         for (int i = 0; i < no->ocupacao; i++){
@@ -103,17 +68,17 @@ void percorreArvorePreOrdem(noB *no){
         }
         printf("] ");
         for(int i = 0; i <= no->ocupacao; i++){
-            percorreArvorePreOrdem(no->vetFilhos[i]);
+            percorreArvoreBPreOrdem(no->vetFilhos[i]);
         }
     }
 }
 
 
-void insereChave(int chave, arvoreB *arv){
+void insereChaveB(int chave, arvoreB *arv){
     noB *aux = arv->raiz;
 
     if(aux->ocupacao == M - 1){
-        noB *novaRaiz = alocaNo();
+        noB *novaRaiz = alocaNoB();
         novaRaiz->folha = 0;
         novaRaiz->vetFilhos[0] = aux;
         split(novaRaiz, 0);
@@ -136,9 +101,9 @@ void insereNaoCheio(noB *no, int chave){
 
         //Insere o valor na posição correta
         no->vetChaves[i+1] = chave;
-        printf("%d inserido\n", chave);
         //Atualiza a ocupação do nó
         no->ocupacao++;
+        printf("%d inserido -- ocupacao: %d\n", chave, no->ocupacao);
 
     }else{//Caso o nó não seja folha
         //Encontra o nó filho correto para a chave
@@ -168,7 +133,7 @@ void split(noB *pai, int posicaoFilho){
     int t = M/2;
     noB *noCheio = pai->vetFilhos[posicaoFilho];
 
-    noB *novoNo = alocaNo();
+    noB *novoNo = alocaNoB();
     novoNo->folha = noCheio->folha;
     novoNo->ocupacao = t-1;
 
@@ -202,3 +167,95 @@ void split(noB *pai, int posicaoFilho){
 
 }
 
+arvoreRB *converter234ParaRB(arvoreB *arv){
+    //Inicia a conversão a partir da raiz
+    noRB *novaRaiz = converterNo234(arv->raiz);
+
+    //Pinta a raiz de preto
+    if(novaRaiz != NULL){
+        novaRaiz->cor = 'P';
+    }
+
+    arvoreRB *novaArvoreRB = alocaArvoreRB();
+    novaArvoreRB->sentinela->fDir = novaRaiz;
+
+    return novaArvoreRB;
+}
+
+noRB *converterNo234(noB *noOriginal){
+    if(noOriginal == NULL) return NULL;
+
+    noRB *noPai;
+    noRB *noEsq;
+    noRB *noDir;
+
+    switch(noOriginal->ocupacao){
+        case 1://Nó com 1 de ocupação e 2 filhos
+            //cria um nó preto único
+            noPai = alocaNoRB(noOriginal->vetChaves[0], 'P');
+            noPai->fEsq = converterNo234(noOriginal->vetFilhos[0]);
+            noPai->fDir = converterNo234(noOriginal->vetFilhos[1]);
+            return noPai;
+            break;
+        case 2://Nó com 2 de ocupação e 3 filhos
+            //cria uma raiz preta com um filho vermelho à esquerda
+            noPai = alocaNoRB(noOriginal->vetChaves[1], 'P');
+            noEsq = alocaNoRB(noOriginal->vetChaves[0], 'V');
+
+            noEsq->fEsq = converterNo234(noOriginal->vetFilhos[0]);
+            noEsq->fDir = converterNo234(noOriginal->vetFilhos[1]);
+            noPai->fEsq = noEsq;
+            noPai->fDir = converterNo234(noOriginal->vetFilhos[2]);
+
+            return noPai;
+            break;
+        case 3://Nó com 3 de ocupação e 4 filhos
+            //cria uma raiz preta com dois filhos vermelhos
+            noPai = alocaNoRB(noOriginal->vetChaves[1], 'P');
+            noEsq = alocaNoRB(noOriginal->vetChaves[0], 'V');
+            noDir = alocaNoRB(noOriginal->vetChaves[2], 'V');
+
+            noEsq->fEsq = converterNo234(noOriginal->vetFilhos[0]);
+            noEsq->fDir = converterNo234(noOriginal->vetFilhos[1]);
+            noDir->fEsq = converterNo234(noOriginal->vetFilhos[2]);
+            noDir->fDir = converterNo234(noOriginal->vetFilhos[3]);
+
+            noPai->fEsq = noEsq;
+            noPai->fDir = noDir;
+            printf("cara. (1)");
+
+            return noPai;
+            break;
+    }
+}
+
+arvoreRB *alocaArvoreRB(){
+    arvoreRB* novaArvore = (arvoreRB*) malloc(sizeof(arvoreRB));
+
+    noRB* sentinela = alocaNoRB(-1000, 'P');
+    novaArvore->sentinela = sentinela;
+    novaArvore->alturaPreto = 0;
+
+    return novaArvore;
+}
+
+noRB *alocaNoRB(int chave, char cor){
+    noRB* novoNo= (noRB*) malloc(sizeof(noRB));
+
+    novoNo->chave=chave;
+    novoNo->cor=cor;
+    novoNo->fEsq=NULL;
+    novoNo->fDir=NULL;
+    novoNo->pai=NULL;
+    novoNo->alturaPreto=0;
+
+    return novoNo;
+}
+
+void percorreArvoreRBPreOrdem(arvoreRB *arv, noRB *aux){
+    if(!aux)
+        return;
+    printf("%d -- %c -- %d\n", aux->chave, aux->cor, aux->alturaPreto);
+    percorreArvoreRBPreOrdem(arv, aux->fEsq);
+    percorreArvoreRBPreOrdem(arv, aux->fDir);
+}
