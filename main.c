@@ -84,14 +84,17 @@ void menu234(arvoreB *a234)
 
         case 3:
             printf("\nImprimindo árvore 2-3-4\n\n");
+            printf("Árvore em pré-ordem: ");
             percorreArvoreBPreOrdem(a234->raiz);
+            printf("\nÁrvore em ordem: ");
+            percorreArvoreB(a234->raiz);
             printf("\n\n");
             break;
 
-        case 4:
+        case 4:;
             arvoreRB *aRB = converter234ParaRB(a234);
 
-            if (!converter234ParaRB)
+            if (!aRB)
             {
                 printf("\nErro ao converter a árvore 2-3-4 para árvore rubro-negra\n");
                 break;
@@ -99,7 +102,7 @@ void menu234(arvoreB *a234)
 
             printf("\nÁrvore 2-3-4 convertida em árvore rubro-negra\n\n");
             percorreArvoreRBPreOrdem(aRB, aRB->sentinela->fDir);
-            printf("\n\n");
+            printf("\n");
 
             menuRB(aRB);
             op = 5;
@@ -118,6 +121,7 @@ void menu234(arvoreB *a234)
 
 void menuRB(arvoreRB *aRB)
 {
+    noRB *aux;
     int op = 0, num;
 
     while (op != 4)
@@ -134,23 +138,29 @@ void menuRB(arvoreRB *aRB)
 
         switch (op)
         {
-            // case 1:
-            //     printf("\nDigite o valor a ser inserido: ");
-            //     scanf("%d", &num);
-            //     insereChaveRB(aRB, num);
-            //     printf("\n\n");
-            //     percorreArvoreRBPreOrdem(aRB, aRB->sentinela->fDir);
-            //     printf("\n\n");
-            //     break;
-            //
-            // case 2:
-            //     printf("Digite o valor a ser removido: ");
-            //     scanf("%d", &num);
-            //     removeChaveRB(aRB, num);
-            //     printf("\n\n");
-            //     percorreArvoreRBPreOrdem(aRB, aRB->sentinela->fDir);
-            //     printf("\n\n");
-            //     break;
+        case 1:
+            printf("\nDigite o valor a ser inserido: ");
+            scanf("%d", &num);
+            aux = alocaNoRB(num, 'V');
+            insereNoRB(aRB, aux);
+            printf("\n\n");
+            percorreArvoreRBPreOrdem(aRB, aRB->sentinela->fDir);
+            printf("\n\n");
+            break;
+
+        case 2:
+            printf("Digite o valor a ser removido: ");
+            scanf("%d", &num);
+            num = removeNoRB(aRB, num);
+            if (num == 0)
+                printf("\nValor não encontrado na árvore.");
+            else
+            {
+                printf("\n\n");
+                percorreArvoreRBPreOrdem(aRB, aRB->sentinela->fDir);
+                printf("\n\n");
+            }
+            break;
 
         case 3:
             printf("\nImprimindo árvore RB\n\n");
