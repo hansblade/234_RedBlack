@@ -21,11 +21,6 @@ int *geraDados(int tam)
         vet[i] = rand() % 100001;
     }
 
-    // for (int i = 0; i < tam; i++)
-    // {
-    //     printf("%d ", vet[i]);
-    // }
-
     return vet;
 }
 
@@ -48,8 +43,6 @@ int main()
         printf("Numero de blocos ocupados: %d\n", arv234->blocosOcupados);
         printf("Numero de splits: %d\n", arv234->splits);
         printf("Altura da árvore: %d\n", alturaArvoreB(arv234));
-        // printf("Número de merges: %d\n", merges);
-        // printf("Número de rotações: %d\n", rotacao);
 
         free(dados[i]);
     }

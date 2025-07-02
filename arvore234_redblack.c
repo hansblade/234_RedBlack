@@ -36,6 +36,7 @@ arvoreB *alocaArvoreB()
     // Conecta a raiz criada à árvore
     novaArvore->raiz = noRaiz;
 
+    // Defino os valores iniciais da árvore
     novaArvore->splits = 0;
     novaArvore->blocosOcupados = 1;
 
@@ -72,9 +73,11 @@ int alturaArvoreB(arvoreB *arvore)
     if (arvore->raiz == NULL)
         return 0;
 
+    // Declaração de variáveis
     noB *atual = arvore->raiz;
     int altura = 0;
 
+    // Aumenta a altura a cada nível até alcançar uma folha
     do
     {
         altura++;
@@ -106,7 +109,7 @@ void percorreArvoreBPreOrdem(noB *no)
 {
     if (no != NULL)
     {
-        printf("[");
+        printf("[ ");
         // Imprime cada um dos valores do nó
         for (int i = 0; i < no->ocupacao; i++)
         {
@@ -259,6 +262,9 @@ arvoreRB *converter234ParaRB(arvoreB *arv)
     novaArvoreRB->sentinela->fDir = novaRaiz;
     novaRaiz->pai = novaArvoreRB->sentinela;
 
+    atualiza_Altura_Preto(novaArvoreRB, novaArvoreRB->sentinela->fDir);
+    atualiza_Altura_Preto_RB(novaArvoreRB);
+
     return novaArvoreRB;
 }
 
@@ -396,6 +402,8 @@ void insereNoRB(arvoreRB *arv, noRB *novoNo)
 {
     noRB *aux = arv->sentinela->fDir;
     noRB *auxPai = arv->sentinela;
+
+    // Encontra a posição do nó
     while (aux != NULL)
     {
         auxPai = aux;
@@ -404,12 +412,18 @@ void insereNoRB(arvoreRB *arv, noRB *novoNo)
         else
             aux = aux->fDir;
     }
+
+    // Insere o nó na posição correta
     if (novoNo->chave < auxPai->chave)
         auxPai->fEsq = novoNo;
     else
         auxPai->fDir = novoNo;
     novoNo->pai = auxPai;
+
+    // Chama o balanceamento
     balanceamentoInsercao(arv, novoNo);
+
+    // Atualiza a altura de preto dos nós e da árvore
     atualiza_Altura_Preto(arv, arv->sentinela->fDir);
     atualiza_Altura_Preto_RB(arv);
 }
@@ -418,6 +432,8 @@ int removeNoRB(arvoreRB *arv, int valor)
 {
     noRB *aux = arv->sentinela->fDir;
     noRB *sub, *predecessor;
+
+    // Encontra o valor na árvore
     while (aux && aux->chave != valor)
     {
         if (valor < aux->chave)
@@ -425,10 +441,10 @@ int removeNoRB(arvoreRB *arv, int valor)
         else
             aux = aux->fDir;
     }
-    if (!aux)
+    if (!aux) // Retorna 0 caso o valor não tenha sido encontrado
         return 0;
     char corRemovida = aux->cor;
-    if (!aux->fEsq && !aux->fDir)
+    if (!aux->fEsq && !aux->fDir) // Nó sem filhos
     {
         if (aux->pai->fEsq == aux)
             aux->pai->fEsq = NULL;
@@ -437,7 +453,7 @@ int removeNoRB(arvoreRB *arv, int valor)
         if (corRemovida == 'P')
             balanceamentoRemocao(arv, NULL, aux->pai);
     }
-    else if (aux->fEsq && aux->fDir)
+    else if (aux->fEsq && aux->fDir) // Nó com dois filhos
     {
         predecessor = aux->fEsq;
         sub = predecessor;
@@ -463,7 +479,7 @@ int removeNoRB(arvoreRB *arv, int valor)
             balanceamentoRemocao(arv, sub->fEsq, sub->pai);
         aux = sub;
     }
-    else if (aux->fEsq)
+    else if (aux->fEsq) // Nó com um filho à esquerda
     {
         sub = aux->fEsq;
         if (aux->pai->fEsq == aux)
@@ -474,7 +490,7 @@ int removeNoRB(arvoreRB *arv, int valor)
         if (aux->cor == 'P')
             balanceamentoRemocao(arv, sub, aux->pai);
     }
-    else if (aux->fDir)
+    else if (aux->fDir) // Nó com um filho à direita
     {
         sub = aux->fDir;
         if (aux->pai->fEsq == aux)
@@ -486,6 +502,8 @@ int removeNoRB(arvoreRB *arv, int valor)
             balanceamentoRemocao(arv, sub, aux->pai);
     }
     free(aux);
+
+    // Atualiza a altura de preto dos nós e da árvore
     atualiza_Altura_Preto(arv, arv->sentinela->fDir);
     atualiza_Altura_Preto_RB(arv);
     return 1;
