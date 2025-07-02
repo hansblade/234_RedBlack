@@ -16,6 +16,8 @@ struct arv
 {
     noB *raiz;
     int ordem;
+    long long splits;
+    long long blocosOcupados;
 };
 
 struct arvRB
@@ -39,6 +41,8 @@ arvoreB *alocaArvoreB();
 // Aloca um novo nó da árvore B
 noB *alocaNoB();
 
+int alturaArvoreB(arvoreB *arvore);
+
 // Percorre a árvore B em ordem a partir de um nó
 void percorreArvoreB(noB *no);
 
@@ -49,11 +53,11 @@ void percorreArvoreBPreOrdem(noB *no);
 void insereChaveB(int chave, arvoreB *arv);
 
 // Insere uma nova chave em um nó não cheio
-void insereNaoCheio(noB *no, int chave);
+void insereNaoCheio(noB *no, int chave, arvoreB *arv);
 
 // Faz o split de um nó cheio
 // Recebe o pai do nó cheio e a posição do nó cheio no vetor de filhos
-void split(noB *pai, int posicaoFilho);
+void split(noB *pai, int posicaoFilho, arvoreB *arv);
 
 // Remove uma chave da árvore
 void removeChaveB(int valor, arvoreB *arv);
