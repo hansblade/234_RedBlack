@@ -36,6 +36,9 @@ arvoreB *alocaArvoreB()
     // Conecta a raiz criada à árvore
     novaArvore->raiz = noRaiz;
 
+    novaArvore->splits = 0;
+    novaArvore->blocosOcupados = 1;
+
     return novaArvore;
 }
 
@@ -62,6 +65,23 @@ noB *alocaNoB()
     novoNo->folha = 0;
 
     return novoNo;
+}
+
+int alturaArvoreB(arvoreB *arvore)
+{
+    if (arvore->raiz == NULL)
+        return 0;
+
+    noB *atual = arvore->raiz;
+    int altura = 0;
+
+    do
+    {
+        altura++;
+        atual = atual->vetFilhos[0];
+    } while (atual->folha != 1);
+
+    return altura;
 }
 
 void percorreArvoreB(noB *no)
@@ -110,17 +130,18 @@ void insereChaveB(int chave, arvoreB *arv)
         // Faz o split da raiz caso ela esteja cheia
         // É criada uma nova raiz para isso
         noB *novaRaiz = alocaNoB();
+        arv->blocosOcupados++;
         novaRaiz->folha = 0;
         novaRaiz->vetFilhos[0] = aux;
-        split(novaRaiz, 0);
+        split(novaRaiz, 0, arv);
         arv->raiz = novaRaiz;
         aux->noPai = novaRaiz;
     }
     // Insere o valor caso a raiz não esteja cheia
-    insereNaoCheio(arv->raiz, chave);
+    insereNaoCheio(arv->raiz, chave, arv);
 }
 
-void insereNaoCheio(noB *no, int chave)
+void insereNaoCheio(noB *no, int chave, arvoreB *arv)
 {
     int i = no->ocupacao - 1;
 
@@ -137,7 +158,6 @@ void insereNaoCheio(noB *no, int chave)
         no->vetChaves[i + 1] = chave;
         // Atualiza a ocupação do nó
         no->ocupacao++;
-        printf("%d inserido -- ocupacao: %d\n", chave, no->ocupacao);
     }
     else
     { // Caso o nó não seja folha
@@ -151,7 +171,7 @@ void insereNaoCheio(noB *no, int chave)
         if (no->vetFilhos[i]->ocupacao == M - 1)
         {
             // Se o nó filho estiver cheio, aciona o split
-            split(no, i);
+            split(no, i, arv);
 
             // Encontra o filho correto para posicionar o elemento
             if (no->vetChaves[i] < chave)
@@ -162,11 +182,11 @@ void insereNaoCheio(noB *no, int chave)
 
         // Insere o filho no próximo nó recursivamente
         // até encontrar o nó correto
-        insereNaoCheio(no->vetFilhos[i], chave);
+        insereNaoCheio(no->vetFilhos[i], chave, arv);
     }
 }
 
-void split(noB *pai, int posicaoFilho)
+void split(noB *pai, int posicaoFilho, arvoreB *arv)
 {
     // Definição do grau mínimo (t) e do nó cheio
     int t = M / 2;
@@ -174,6 +194,7 @@ void split(noB *pai, int posicaoFilho)
 
     // Cria um novo nó para o split
     noB *novoNo = alocaNoB();
+    arv->blocosOcupados++;
     novoNo->folha = noCheio->folha;
     novoNo->ocupacao = t - 1;
 
@@ -217,7 +238,7 @@ void split(noB *pai, int posicaoFilho)
 
     // Ajusta a ocupação do pai
     pai->ocupacao++;
-    printf("split!\n");
+    arv->splits++;
 }
 
 // ------------------------- Operações de conversão ------------------------- //
